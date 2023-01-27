@@ -11,7 +11,7 @@ class LabeledData:
         self.data = data
         self.label = label
 
-
+#hello
 def get_data(path: str, label: bool):
     """"
     Load a set of .nii file from a folder, return a list of tridimensional matrixes
