@@ -27,6 +27,7 @@ def get_data(path: str, label: bool):
     print("LOAD COMPLETED")
     return datas
 
+#fjkhaskfals
 
 ASD_DATA = get_data("C:\\Users\\ksamu\\OneDrive\\Documenti\\Documenti ingegneria condivisi\\Magistrale\\Primo "
                     "semestre\\Artificial Intelligence\\DATASET\\ASD", True)
