@@ -19,7 +19,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import *
 
-#ciao
 class TriConvNet(nn.Module):
     def __init__(self):
         super(TriConvNet, self).__init__()
