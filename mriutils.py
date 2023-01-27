@@ -4,6 +4,8 @@ import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
 
+from conf import PATH_ASD
+from conf import PATH_TC
 
 class LabeledData:
     def __init__(self, name: str, data, label: bool):
@@ -29,9 +31,9 @@ def get_data(path: str, label: bool):
 
 #fjkhaskfals
 
-ASD_DATA = get_data("C:\\Users\\ksamu\\OneDrive\\Documenti\\Documenti ingegneria condivisi\\Magistrale\\Primo "
-                    "semestre\\Artificial Intelligence\\DATASET\\ASD", True)
-TC_DATA = get_data("C:\\Users\\ksamu\\OneDrive\\Documenti\\Documenti ingegneria condivisi\\Magistrale\\Primo "
-                   "semestre\\Artificial Intelligence\\DATASET\\TC", False)
+
+
+ASD_DATA = get_data(PATH_ASD, True)
+TC_DATA = get_data(PATH_TC, False)
 
 DATA = ASD_DATA + TC_DATA
