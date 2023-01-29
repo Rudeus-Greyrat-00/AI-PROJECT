@@ -19,7 +19,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import *
 
+from mriutils import load_data
+
 class TriConvNet(nn.Module):
     def __init__(self):
         super(TriConvNet, self).__init__()
-        self.conv1 = nn.Conv3d(in_channels=1, out_channels=64, kernel_size=3, stride=1, padding=1)  # TODO settare il kernel size corretto, stride e padding
+        self.conv1 = nn.Conv3d(in_channels=61, out_channels=61, kernel_size=3, stride=1, padding=1)  #
+
+
+
+if __name__ == '__main__':
+    train_x, train_y = load_data()
+
+
+

@@ -7,11 +7,6 @@ import matplotlib.pyplot as plt
 from conf import PATH_ASD
 from conf import PATH_TC
 
-class LabeledData:
-    def __init__(self, name: str, data, label: bool):
-        self.name = name
-        self.data = data
-        self.label = label
 
 def get_data(path: str, label: bool):
     """"
@@ -19,18 +14,21 @@ def get_data(path: str, label: bool):
     """
     entries = os.listdir(path)
     datas = []
+    labels = []
     for entry in entries:
         if not entry.endswith(".nii"):
             continue
         nib_image = nib.load(path + '\\' + entry).get_fdata()
-        datas.append(LabeledData(entry, nib_image, label))
-        print(f"Image {entry} loaded, dimension = {nib_image.shape}")
-    print("LOAD COMPLETED")
-    return datas
+        datas.append(nib_image)
+        labels.append(label)
+    train_x = np.array(datas)
+    train_y = np.array(labels)
+    return train_x, train_y
 
 
-
-ASD_DATA = get_data(PATH_ASD, True)
-TC_DATA = get_data(PATH_TC, False)
-
-DATA = ASD_DATA + TC_DATA
+def load_data():
+    x1, y1 = get_data(PATH_ASD, True)
+    x2, y2 = get_data(PATH_TC, False)
+    train_x = np.concatenate((x1, x2))
+    train_y = np.concatenate((y1, y2))
+    return train_x, train_y
