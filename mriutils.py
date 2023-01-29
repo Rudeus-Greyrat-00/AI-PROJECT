@@ -10,7 +10,7 @@ from conf import PATH_TC
 
 def get_data(path: str, label: bool):
     """"
-    Load a set of .nii file from a folder, return a list of tridimensional matrixes
+    Load a set of .nii file from a folder
     """
     entries = os.listdir(path)
     datas = []
