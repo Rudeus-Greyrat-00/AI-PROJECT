@@ -31,4 +31,6 @@ def load_data():
     x2, y2 = get_data(PATH_TC, False)
     train_x = np.concatenate((x1, x2))
     train_y = np.concatenate((y1, y2))
+    train_x = train_x[..., np.newaxis]
+    print(train_x.shape)
     return train_x, train_y

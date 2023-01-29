@@ -30,6 +30,8 @@ class TriConvNet(nn.Module):
 
 if __name__ == '__main__':
     train_x, train_y = load_data()
+    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.2)
+    
 
 
 
