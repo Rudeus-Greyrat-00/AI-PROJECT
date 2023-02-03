@@ -1,16 +1,9 @@
 # importing the libraries
-import pandas as pd
 import numpy as np
 import os
 
-# for reading and displaying images
-from skimage.io import imread
-import matplotlib.pyplot as plt
-
 # for creating validation set
 from sklearn.model_selection import train_test_split
-# for evaluating the model
-from sklearn.metrics import accuracy_score
 
 # PyTorch's libraries and modules
 import torch
@@ -56,3 +49,6 @@ if __name__ == '__main__':
     train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.2)
     train_x = torch.from_numpy(train_x)
     val_x = torch.from_numpy(val_x)
+
+    test = TriConvNet()
+    test.forward(train_x)
