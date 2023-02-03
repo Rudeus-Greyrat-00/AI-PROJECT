@@ -27,8 +27,12 @@ class TriConvNet(nn.Module):
         super(TriConvNet, self).__init__()
         self.conv_layer1 = self._conv_layer_set(1, 32)  # ???
         self.conv_layer2 = self._conv_layer_set(32, 64)  # ???
+        ###
+
         self.fc1 = nn.Linear(512, 128)
         self.fc2 = nn.Linear(128, 2)
+
+
 
     def _conv_layer_set(self, c_in, c_out):
         conv_layer = nn.Sequential(
@@ -37,6 +41,14 @@ class TriConvNet(nn.Module):
             nn.MaxPool3d((2, 2, 2)),
         )
         return conv_layer
+
+    def forward(self, x):
+        x = self.conv_layer1(x)
+        x = self.conv_layer2(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
 
 
 if __name__ == '__main__':
