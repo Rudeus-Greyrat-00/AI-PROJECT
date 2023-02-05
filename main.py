@@ -18,12 +18,10 @@ from mriutils import load_data
 class TriConvNet(nn.Module):
     def __init__(self):
         super(TriConvNet, self).__init__()
-        self.conv_layer1 = self._conv_layer_set(1, 32)  # ???
-        self.conv_layer2 = self._conv_layer_set(32, 64)  # ???
-        ###
-
-        self.fc1 = nn.Linear(512, 128)
-        self.fc2 = nn.Linear(128, 2)
+        self.conv_layer1 = self._conv_layer_set(1, 11)  # ???
+        self.conv_layer2 = self._conv_layer_set(11, 14)  # ??
+        self.fc1 = nn.Linear(13, 12)
+        self.fc2 = nn.Linear(12, 2)
 
 
 
@@ -46,9 +44,10 @@ class TriConvNet(nn.Module):
 
 if __name__ == '__main__':
     train_x, train_y = load_data()
-    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.2)
+    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)
     train_x = torch.from_numpy(train_x)
     val_x = torch.from_numpy(val_x)
 
     test = TriConvNet()
-    test.forward(train_x)
+    test = test.double()
+    val_x = test.forward(val_x)
