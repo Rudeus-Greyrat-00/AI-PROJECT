@@ -18,8 +18,8 @@ from mriutils import load_data
 class TriConvNet(nn.Module):
     def __init__(self):
         super(TriConvNet, self).__init__()
-        self.conv_layer1 = self._conv_layer_set(1, 32)  # ???
-        self.conv_layer2 = self._conv_layer_set(32, 64)  # ??
+        self.conv_layer1 = self._conv_layer_set(1, 32)
+        self.conv_layer2 = self._conv_layer_set(32, 64)
         self.flat = nn.Flatten()
         self.fc1 = nn.Linear(64 * 13 * 16 * 13, 12)
         self.fc2 = nn.Linear(12, 2)
