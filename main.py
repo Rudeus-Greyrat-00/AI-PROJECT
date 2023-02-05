@@ -18,9 +18,10 @@ from mriutils import load_data
 class TriConvNet(nn.Module):
     def __init__(self):
         super(TriConvNet, self).__init__()
-        self.conv_layer1 = self._conv_layer_set(1, 11)  # ???
-        self.conv_layer2 = self._conv_layer_set(11, 14)  # ??
-        self.fc1 = nn.Linear(13, 12)
+        self.conv_layer1 = self._conv_layer_set(1, 32)  # ???
+        self.conv_layer2 = self._conv_layer_set(32, 64)  # ??
+        self.flat = nn.Flatten()
+        self.fc1 = nn.Linear(64 * 13 * 16 * 13, 12)
         self.fc2 = nn.Linear(12, 2)
 
 
@@ -36,6 +37,7 @@ class TriConvNet(nn.Module):
     def forward(self, x):
         x = self.conv_layer1(x)
         x = self.conv_layer2(x)
+        x = self.flat(x)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
@@ -43,11 +45,30 @@ class TriConvNet(nn.Module):
 
 
 if __name__ == '__main__':
+
     train_x, train_y = load_data()
     train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)
     train_x = torch.from_numpy(train_x)
     val_x = torch.from_numpy(val_x)
 
-    test = TriConvNet()
-    test = test.double()
-    val_x = test.forward(val_x)
+    net = TriConvNet()
+    net = net.double()
+
+    val_x = net.forward(val_x)
+
+    """
+
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+        for epoch in range(10):
+        for i in range(len(val_x)):
+            inputs = val_x[i]
+            labels = val_y[i]
+            optimizer.zero_grad()
+            outputs = net(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+    """
