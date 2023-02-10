@@ -53,9 +53,9 @@ class TriConvNet(nn.Module):
         x = self.conv_layer3(x)
         x = self.conv_layer4(x)
         x = self.conv_layer5(x)
-        F.interpolate(x, scale_factor=self.scale_factor, mode='trilinear', align_corners=False)  # upsample
+        F.interpolate(x, scale_factor=self.scale_factor, mode='trilinear', align_corners=False)  # up sample
         x = self.conv_layer6(x)
-        F.interpolate(x, scale_factor=self.scale_factor, mode='trilinear', align_corners=False)  # upsample
+        F.interpolate(x, scale_factor=self.scale_factor, mode='trilinear', align_corners=False)  # up sample
         x = self.conv_layer7(x)
         x = self.conv_layer8(x)
         x = self.layer9(x)
@@ -66,13 +66,15 @@ class TriConvNet(nn.Module):
 
 
 if __name__ == '__main__':
-    train_x, train_y = load_data()
-    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)
-    train_x = torch.from_numpy(train_x)
+    train_x, train_y = load_data()  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
+    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)  # split data
+    train_x = torch.from_numpy(train_x)  # it transforms the inputs from numpy array to pytorch tensors
     val_x = torch.from_numpy(val_x)
 
-    net = TriConvNet()
+    net = TriConvNet()  # create an instance of the net
     net = net.double()
+
+    #  test
 
     val_x = net.forward(val_x)
 
