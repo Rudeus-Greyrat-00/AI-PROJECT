@@ -24,7 +24,7 @@ class TriConvNet(nn.Module):
         self.conv_layer7 = self._layer_conv(128, 64, (2, 2, 2))
         self.conv_layer8 = nn.Conv3d(64, 32, kernel_size=(3, 3, 3), stride=(1, 1, 1))
         self.layer9 = nn.ReLU()
-        self.fc1 = nn.Linear(13, 256)
+        self.fc1 = nn.Linear(13, 256)  #TODO check input qui
         self.fc2 = nn.Linear(256, 256)
         self.fc3 = nn.Linear(256, 2)
 
