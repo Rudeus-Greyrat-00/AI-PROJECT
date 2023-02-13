@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.optim import *
 
 from mriutils import load_data
@@ -73,29 +72,36 @@ class TriConvNet(nn.Module):
 if __name__ == '__main__':
     train_x, train_y = load_data()  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
     train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)  # split data
+
     train_x = torch.from_numpy(train_x)  # it transforms the inputs from numpy array to pytorch tensors
     val_x = torch.from_numpy(val_x)
+
+    train_y = torch.from_numpy(train_y)
+    val_y = torch.from_numpy(val_y)
 
     net = TriConvNet()  # create an instance of the net
     net = net.double()
 
-    #  test
-
-    val_x = net.forward(val_x)
-
-    """
-
-
+    # Scegliere la funzione di perdita
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-        for epoch in range(10):
-        for i in range(len(val_x)):
-            inputs = val_x[i]
-            labels = val_y[i]
-            optimizer.zero_grad()
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
 
-    """
+    # Scegliere un ottimizzatore
+    optimizer = SGD(net.parameters(), lr=0.01)
+
+    # Loop di allenamento
+    num_epochs = 1
+    for epoch in range(num_epochs):
+        # Passare i dati attraverso la rete
+        outputs = net(val_x)
+
+        print(outputs.shape, val_y.shape)
+
+        # Calcolare la perdita
+        loss = criterion(outputs, val_y)
+
+        # Effettuare il backpropagation
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+
