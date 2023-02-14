@@ -3,10 +3,6 @@ import os
 import nibabel as nib
 import numpy as np
 
-from conf import PATH_ASD
-from conf import PATH_TC
-
-
 def get_data(path: str, label: bool):
     """"
     Load a set of .nii file from a folder
@@ -25,9 +21,15 @@ def get_data(path: str, label: bool):
     return train_x, train_y
 
 
-def load_data():
-    x1, y1 = get_data(PATH_ASD, True)
-    x2, y2 = get_data(PATH_TC, False)
+def load_data(get_from_exsample : bool = False):
+    if(get_from_exsample):
+        x1, y1 = get_data(".\\example\\ASD", True)
+        x2, y2 = get_data(".\\example\\TC", False)
+    else:
+        from conf import PATH_ASD
+        from conf import PATH_TC
+        x1, y1 = get_data(PATH_ASD, True)
+        x2, y2 = get_data(PATH_TC, False)
     train_x = np.concatenate((x1, x2))
     train_y = np.concatenate((y1, y2))
     train_x = np.expand_dims(train_x, axis=1)

@@ -70,7 +70,7 @@ class TriConvNet(nn.Module):
 
 
 if __name__ == '__main__':
-    train_x, train_y = load_data()  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
+    train_x, train_y = load_data(get_from_exsample=True)  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
     train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)  # split data
 
     train_x = torch.from_numpy(train_x)  # it transforms the inputs from numpy array to pytorch tensors
@@ -103,5 +103,3 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-
