@@ -1,6 +1,7 @@
 # importing libraries
 # for creating validation set
 from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
 
 # PyTorch's libraries and modules
 import torch
@@ -8,7 +9,9 @@ from torch.autograd import Variable
 import torch.nn as nn
 from torch.optim import *
 
-from mriutils import load_data
+from conf import PATH_TOTAL, ANNOTATION_FILE
+
+from mri_datautils import NiiDataset
 
 
 class TriConvNet(nn.Module):
@@ -70,36 +73,6 @@ class TriConvNet(nn.Module):
 
 
 if __name__ == '__main__':
-    train_x, train_y = load_data(get_from_exsample=True)  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
-    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)  # split data
+    training_data = NiiDataset(ANNOTATION_FILE, PATH_TOTAL)
 
-    train_x = torch.from_numpy(train_x)  # it transforms the inputs from numpy array to pytorch tensors
-    val_x = torch.from_numpy(val_x)
-
-    train_y = torch.from_numpy(train_y)
-    val_y = torch.from_numpy(val_y)
-
-    net = TriConvNet()  # create an instance of the net
-    net = net.double()
-
-    # Scegliere la funzione di perdita
-    criterion = nn.CrossEntropyLoss()
-
-    # Scegliere un ottimizzatore
-    optimizer = SGD(net.parameters(), lr=0.01)
-
-    # Loop di allenamento
-    num_epochs = 1
-    for epoch in range(num_epochs):
-        # Passare i dati attraverso la rete
-        outputs = net(val_x)
-
-        print(outputs.shape, val_y.shape)
-
-        # Calcolare la perdita
-        loss = criterion(outputs, val_y)
-
-        # Effettuare il backpropagation
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+    train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
