@@ -45,6 +45,7 @@ def load_data(get_from_exsample : bool = False):
 def read_nii_image(path : str):
     nib_image = nib.load(path).get_fdata()
     nparr = np.array(nib_image)
+    nparr = np.expand_dims(nparr, axis=0)  # channel
     return torch.from_numpy(nparr)
 
 def generate_label():

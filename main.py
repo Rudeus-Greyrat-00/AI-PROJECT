@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 import torch
 from torch.autograd import Variable
 import torch.nn as nn
-from torch.optim import *
+import torch.optim as optim
 
 from conf import PATH_TOTAL, ANNOTATION_FILE
 
@@ -16,7 +16,7 @@ from mri_datautils import NiiDataset
 
 class TriConvNet(nn.Module):
     def __init__(self):
-        self.net_scale_factor = 2
+        self.net_scale_factor = 1
 
         super(TriConvNet, self).__init__()
         self.conv_layer1 = self._layer_conv(1, self.scale(32), (2, 2, 2))
@@ -53,6 +53,7 @@ class TriConvNet(nn.Module):
 
     def forward(self, x):
         x = self.conv_layer1(x)
+        return x
         x = self.conv_layer2(x)
         #x = self.conv_layer3(x)
         #x = self.conv_layer4(x)
@@ -75,4 +76,36 @@ class TriConvNet(nn.Module):
 if __name__ == '__main__':
     training_data = NiiDataset(ANNOTATION_FILE, PATH_TOTAL)
 
-    train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
+    train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True, num_workers=4)
+
+    train_features, train_labels = next(iter(train_dataloader))
+
+    net = TriConvNet()
+    net = net.double()
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+    for epoch in range(2):  # loop over the dataset multiple times
+
+        running_loss = 0.0
+        for i, data in enumerate(train_dataloader, 0):
+            # get the inputs; data is a list of [inputs, labels]
+            inputs, labels = data
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = net(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+            if i % 2000 == 1999:  # print every 2000 mini-batches
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+                running_loss = 0.0
+
+    print('Finished Training')
