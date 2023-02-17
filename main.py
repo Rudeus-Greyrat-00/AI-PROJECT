@@ -30,7 +30,7 @@ class TriConvNet(nn.Module):
         self.conv_layer7 = self._layer_conv(self.scale(128), self.scale(64), (2, 2, 2))
         self.conv_layer8 = nn.Conv3d(self.scale(64), self.scale(32), kernel_size=(3, 3, 3), stride=(1, 1, 1))
         self.layer9 = nn.ReLU()
-        self.fc1 = nn.Linear(7, self.scale(256))  #TODO check input qui
+        self.fc1 = nn.Linear(7, self.scale(256))
         self.fc2 = nn.Linear(self.scale(256), self.scale(256))
         self.fc3 = nn.Linear(self.scale(256), 2)
 
@@ -53,7 +53,6 @@ class TriConvNet(nn.Module):
 
     def forward(self, x):
         x = self.conv_layer1(x)
-        return x
         x = self.conv_layer2(x)
         #x = self.conv_layer3(x)
         #x = self.conv_layer4(x)
@@ -67,6 +66,8 @@ class TriConvNet(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
+        print(x.shape)
+        print("got here!")
         return x
 
     def scale(self, n1):
