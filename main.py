@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     train_features, train_labels = next(iter(train_dataloader))
 
-    net = TriConvNet()
+    net = TriConvNet()  #
     net = net.double()
 
     criterion = nn.CrossEntropyLoss()
