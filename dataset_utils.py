@@ -1,3 +1,8 @@
+""""
+This file contains some utility function for working with dataset
+Running this file will test the functions.
+"""
+
 import numpy as np
 
 from conf import PATH_TOTAL, ANNOTATION_FILE
@@ -24,8 +29,8 @@ def make_train_val_datasets(split_factor: float, path=PATH_TOTAL):
 
     np.random.shuffle(select_v)
 
-    train_indexes = np.where(select_v == 1)
-    test_indexes = np.where(select_v == 0)
+    train_indexes = np.where(select_v == 1)[0]
+    test_indexes = np.where(select_v == 0)[0]
 
     train_set = Subset(all_data, train_indexes)
     val_set = Subset(all_data, test_indexes)

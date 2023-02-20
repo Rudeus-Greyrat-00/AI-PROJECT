@@ -1,3 +1,8 @@
+""""
+This file contains a custom pytorch Dataloader that work with pytorch using .nii files, and everything it needs to work
+Running this file will generate the labels.csv file
+"""
+
 import os.path
 import os
 
@@ -10,9 +15,8 @@ import numpy as np
 
 import csv
 
-""""
-This file contains utility class definitions to work with pytorch using .nii files
-"""
+import random
+import string
 
 
 def read_nii_image(path: str):
@@ -54,7 +58,11 @@ if __name__ == '__main__':
     generate_label(path_ASD=PATH_ASD, path_TC=PATH_TC, path_TOTAL=PATH_TOTAL)
 
 
-class NiiDataset(Dataset):
+class NiiDataset(Dataset):  # the most important thing on this file
+    """"
+    Custom dataloader, please refer to the pytorch documentation
+    """
+
     def __init__(self, annotation_file, img_dir, transform=None, target_transform=None):
         self.img_label = pd.read_csv(annotation_file)
         self.img_dir = img_dir
@@ -73,3 +81,19 @@ class NiiDataset(Dataset):
         if self.target_trasnform:
             label = self.target_trasnform(label)
         return image, label
+
+    def subset(self, indexes):
+        """
+        This was a debug method that I needed for some reasons. What it does is it creates a new csv label file with
+        only element of the current NiiDataset (self) that correspond to the index. It stores that csv, and then creates
+        a new istance of NiiDataset that use it. Right now it is not used
+        """
+        subset_labels_csv_filename = "SUBSET"
+        for i in range(10):
+            subset_labels_csv_filename += random.choice(string.ascii_lowercase)
+        subset_labels_csv_filename += ".csv"
+        with open(os.path.join(self.img_dir, subset_labels_csv_filename), "w") as file:
+            writer = csv.writer(file)
+            for i in indexes:
+                writer.writerow([self.img_label.iloc[i, 0], self.img_label.iloc[i, 1]])
+        return NiiDataset(annotation_file=os.path.join(self.img_dir, subset_labels_csv_filename), img_dir=self.img_dir)
