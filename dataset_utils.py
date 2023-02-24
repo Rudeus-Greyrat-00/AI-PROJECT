@@ -32,8 +32,8 @@ def make_train_val_datasets(split_factor: float, path=PATH_TOTAL):
     train_indexes = np.where(select_v == 1)[0]
     test_indexes = np.where(select_v == 0)[0]
 
-    train_set = Subset(all_data, train_indexes)
-    val_set = Subset(all_data, test_indexes)
+    train_set = all_data.subset(train_indexes)
+    val_set = all_data.subset(test_indexes)
 
     return_list.append({"training": train_set, "validation": val_set})
 
@@ -81,8 +81,8 @@ def make_cross_validation_datasets(k_fold: int, path=PATH_TOTAL):
         train_indices = train_left_indices + train_right_indices
         val_indices = list(range(validation_start, validation_end))
 
-        train_set = Subset(all_data, train_indices)
-        val_set = Subset(all_data, val_indices)
+        train_set = all_data.subset(train_indices)
+        val_set = all_data.subset(val_indices)
 
         return_list.append({"training": train_set, "validation": val_set})
 

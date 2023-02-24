@@ -59,5 +59,9 @@ def check_accuracy(test_dataloader, net, load_state=False, load_path=None):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print(f'Accuracy of the network on test images: {100 * correct // total} %')
+    accuracy = 100 * correct // total
+
+    print(f'Accuracy of the network on test images: {accuracy} %')
+
+    return accuracy
 

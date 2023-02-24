@@ -9,7 +9,7 @@ import torch.nn as nn
 
 class TriConvNet(nn.Module):
     def __init__(self, inv_scale: int = 1):
-        self.net_scale_factor = 8
+        self.net_scale_factor = inv_scale
 
         super(TriConvNet, self).__init__()
         self.conv_layer1 = self._layer_conv(1, self.scale(32), (2, 2, 2))
@@ -25,7 +25,7 @@ class TriConvNet(nn.Module):
         self.layer9 = nn.ReLU()
         self.fc1 = self._layer_fully_connected(self.scale(17248), self.scale(256))
         self.fc2 = self._layer_fully_connected(self.scale(256), self.scale(256))
-        self.fc3 = nn.Linear(self.scale(256), 2)
+        self.fc3 = nn.Linear(self.scale(256), 2) #TODO test
 
     def _layer_conv_maxpool(self, c_in, c_out, stride):
         conv_layer = nn.Sequential(
