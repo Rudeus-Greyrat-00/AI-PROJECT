@@ -19,7 +19,7 @@ from dataset_utils import make_train_val_datasets, make_cross_validation_dataset
 
 from training import train_and_save, check_accuracy
 
-from models import TriConvNet
+from models import TriConvNet, TriConvNet2
 
 
 def train_test_split(split_factor: float, net, criterion, optimizer, epochs):
@@ -60,29 +60,16 @@ def train_test_cross(k_fold: int, net, criterion, optimizer, epochs):
 
 
 if __name__ == '__main__':
-    net = TriConvNet(inv_scale=1)
+    net = TriConvNet2(inv_scale=1)
     net = net.double()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9)  # stochastic gradient descend
 
     #train_test_cross(k_fold=10, net=net, criterion=criterion, optimizer=optimizer, epochs=3)
-    train_test_split(0.1, net=net, criterion=criterion, optimizer=optimizer, epochs=20)
+    train_test_split(0.1, net=net, criterion=criterion, optimizer=optimizer, epochs=10)
 
 
-# criterion = cross entropy loss, scale 1
-# epoch = 20, accuracy = 57%
-# epoch = 10, accuracy = 57%
-# epoch = 10, accuracy = 66%
-# epoch = 5, accuracy = 52%
-# epoch = 5, accuracy = 39%
-# epoch = 2, accuracy = 44%
-# epoch = 2, accuracy = 44%
 
-# criterion = cross entropy loss, scale 4
-# epoch = 10, accuracy =
-# epoch = 5, accuracy =
-# epoch = 2, accuracy =
-# epoch = 2, accuracy =
-# epoch = 5, accuracy =
+
 
