@@ -66,8 +66,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9)  # stochastic gradient descend
 
-    #train_test_cross(k_fold=10, net=net, criterion=criterion, optimizer=optimizer, epochs=3)
-    train_test_split(0.1, net=net, criterion=criterion, optimizer=optimizer, epochs=10)
+    train_test_split(0.1, net=net, criterion=criterion, optimizer=optimizer, epochs=2)
 
 
 
