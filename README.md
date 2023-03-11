@@ -18,3 +18,11 @@ ANNOTATION_FILE = "[PATH TO "TOTAL" FOLDER]\\label.csv"
 ```
 
 3 - Run the "main.py" file to test if everything work, hopefully it will do.
+
+# DOCUMENTATION:
+- The file models.py contains neural net models
+- The file mri_datautils.py contains the custom dataset that work with .nii files (as well as all the function needed to read .nii files)
+- The file training.py contains the function to train the net and check the accuracy
+- The file dataset_utils.py contains some function to generate test/train datasets (using the dataset defined in mri_datautils.py)
+
+Further documentation is available inside the code!
