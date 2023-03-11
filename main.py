@@ -1,105 +1,74 @@
+""""
+This file is the main.py
+"""
+
 # importing libraries
 # for creating validation set
-from sklearn.model_selection import train_test_split
+import os.path
+
+from torch.utils.data import DataLoader
 
 # PyTorch's libraries and modules
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
-from torch.optim import *
+import torch.optim as optim
 
-from mriutils import load_data
+from conf import PATH_TOTAL, ANNOTATION_FILE, NET_WEIGHT_PATH
+
+from dataset_utils import make_train_val_datasets, make_cross_validation_datasets
+
+from training import train_and_save, check_accuracy
+
+from models import TriConvNet, TriConvNet2
 
 
-class TriConvNet(nn.Module):
-    def __init__(self):
-        self.net_scale_factor = 2
+def train_test_split(split_factor: float, net, criterion, optimizer, epochs):
+    datasets = make_train_val_datasets(split_factor)  # create the datasets
 
-        super(TriConvNet, self).__init__()
-        self.conv_layer1 = self._layer_conv(1, self.scale(32), (2, 2, 2))
-        self.conv_layer2 = self._layer_conv_maxpool(self.scale(32), self.scale(64), (1, 1, 1))
-        # self.conv_layer3 = self._layer_conv(self.scale(64), self.scale(128), (2, 2, 2))
-        # self.conv_layer4 = self._layer_conv(self.scale(128), self.scale(256), (1, 1, 1))
-        self.conv_layer5 = self._layer_conv(self.scale(64), self.scale(256), (2, 2, 2))
-        self.upsample1 = nn.Upsample(scale_factor=2, mode='nearest')
-        self.conv_layer6 = self._layer_conv(self.scale(256), self.scale(128), (1, 1, 1))
-        self.upsample2 = nn.Upsample(scale_factor=2, mode='nearest')
-        self.conv_layer7 = self._layer_conv(self.scale(128), self.scale(64), (2, 2, 2))
-        self.conv_layer8 = nn.Conv3d(self.scale(64), self.scale(32), kernel_size=(3, 3, 3), stride=(1, 1, 1))
-        self.layer9 = nn.ReLU()
-        self.fc1 = nn.Linear(7, self.scale(256))  #TODO check input qui
-        self.fc2 = nn.Linear(self.scale(256), self.scale(256))
-        self.fc3 = nn.Linear(self.scale(256), 2)
+    # create the dataloaders from the datasets
+    train_dataloader = DataLoader(datasets[0]["training"], batch_size=64, shuffle=True, num_workers=4)
+    test_dataloader = DataLoader(datasets[0]["validation"], batch_size=64, shuffle=True, num_workers=4)
 
-    def _layer_conv_maxpool(self, c_in, c_out, stride):
-        conv_layer = nn.Sequential(
-            nn.Conv3d(c_in, c_out, kernel_size=(3, 3, 3), stride=stride),
-            nn.BatchNorm3d(num_features=c_out),
-            nn.ReLU(),
-            nn.MaxPool3d((2, 2, 2))
-        )
-        return conv_layer
+    print("[TRAINING PART]:")
 
-    def _layer_conv(self, c_in, c_out, stride):
-        conv_layer = nn.Sequential(
-            nn.Conv3d(c_in, c_out, kernel_size=(3, 3, 3), stride=stride),
-            nn.BatchNorm3d(num_features=c_out),
-            nn.ReLU()
-        )
-        return conv_layer
+    #  train the net
+    train_and_save(net=net, criterion=criterion, optimizer=optimizer, epochs=epochs, train_loader=train_dataloader)
 
-    def forward(self, x):
-        x = self.conv_layer1(x)
-        x = self.conv_layer2(x)
-        #x = self.conv_layer3(x)
-        #x = self.conv_layer4(x)
-        x = self.conv_layer5(x)
-        x = self.upsample1(x)
-        x = self.conv_layer6(x)
-        x = self.upsample2(x)
-        x = self.conv_layer7(x)
-        x = self.conv_layer8(x)
-        x = self.layer9(x)
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.fc3(x)
-        return x
+    print("[TESTING PART]:")
 
-    def scale(self, n1):
-        return int(n1 / self.net_scale_factor)
+    #  measure the accuracy of the nets
+    check_accuracy(test_dataloader=test_dataloader, net=net)
+
+
+def train_test_cross(k_fold: int, net, criterion, optimizer, epochs):
+    datasets = make_cross_validation_datasets(k_fold=k_fold)
+
+    n_of_trainings = len(datasets)
+    accuracy_values = []
+
+    for test_train_dict in datasets:
+        train_dataloader = DataLoader(test_train_dict["training"], batch_size=64, shuffle=True, num_workers=4)
+        test_dataloader = DataLoader(test_train_dict["validation"], batch_size=64, shuffle=True, num_workers=4)
+
+        train_and_save(net=net, criterion=criterion, optimizer=optimizer, epochs=epochs, train_loader=train_dataloader)
+
+        accuracy = check_accuracy(test_dataloader=test_dataloader, net=net)
+        accuracy_values.append(accuracy)
+
+    average_accuracy = sum(accuracy_values) / n_of_trainings
+    print(f"Accuracy value measured through cross validation: {average_accuracy}")
 
 
 if __name__ == '__main__':
-    train_x, train_y = load_data(get_from_exsample=True)  # load data, train_x and train_y are numpy array. y -> labels. x -> datas
-    train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.05)  # split data
-
-    train_x = torch.from_numpy(train_x)  # it transforms the inputs from numpy array to pytorch tensors
-    val_x = torch.from_numpy(val_x)
-
-    train_y = torch.from_numpy(train_y)
-    val_y = torch.from_numpy(val_y)
-
-    net = TriConvNet()  # create an instance of the net
+    net = TriConvNet2(inv_scale=1)
     net = net.double()
 
-    # Scegliere la funzione di perdita
     criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9)  # stochastic gradient descend
 
-    # Scegliere un ottimizzatore
-    optimizer = SGD(net.parameters(), lr=0.01)
+    train_test_split(0.1, net=net, criterion=criterion, optimizer=optimizer, epochs=2)
 
-    # Loop di allenamento
-    num_epochs = 1
-    for epoch in range(num_epochs):
-        # Passare i dati attraverso la rete
-        outputs = net(val_x)
 
-        print(outputs.shape, val_y.shape)
 
-        # Calcolare la perdita
-        loss = criterion(outputs, val_y)
 
-        # Effettuare il backpropagation
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+
